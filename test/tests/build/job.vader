@@ -1,62 +1,22 @@
 Before:
-    function! RemoveFile(file)
-        if has('win32')
-            silent echo system("del /F /Q \"".a:file."\" >nul 2>&1")
-        else
-            silent echo system("rm -rf '".a:file."'")
-        endif
-    endfunction
-
-    function! RemoveCMakeDirs()
-        if has('win32')
-            for l:value in ['cmake-build-Release', 'cmake-build-Debug', 'cmake-build-RelWithDebInfo', 'cmake-build-MinSizeRel', 'cmake-build']
-                silent echo system("rd /S /Q \"".l:value."\" >nul 2>&1")
-            endfor
-        else
-            silent echo system("rm -rf cmake-build*")
-        endif
-    endfunction
-    cd test\ proj
-    silent call RemoveFile("compile_commands.json")
+    silent call OpenTestProject()
     silent call RemoveCMakeDirs()
 
-    let g:cmake_compile_commands_link=""
-    let g:cmake_compile_commands=0
-    let g:cmake_usr_args=""
-    let g:cmake_cxx_compiler=""
-    let g:cmake_c_compiler=""
-    let g:cmake_build_type=""
-    let g:cmake_install_prefix=""
-    let g:cmake_project_generator=""
-    let g:make_arguments=""
-    let g:cmake_build_target="all"
-    let g:cmake_build_dir=""
-    let g:cmake_change_build_command=1
-    let g:cmake_reload_after_save=0
-    let g:cmake_build_dir_prefix="cmake-build-"
+    silent call ResetPluginOptions()
     let g:cmake_build_executor = 'job'
-    let g:cmake_variants = {}
-    let g:cmake_ctest_args = ''
-    let g:cmake_executable = 'cmake'
     " Use on in order to close all windows and avoid E36 error
     silent on
 
 After:
     silent cclose
-    silent call RemoveFile("compile_commands.json")
     silent call RemoveCMakeDirs()
-    cd ..
 
 Execute ([Job executor] Generate cmake project with default settings):
     if !has('win32')    " Skip for Windows
         Assert !isdirectory("cmake-build-Release"), "Build directory shouldn't exist"
         AssertEqual bufnr('cmake4vim_execute'), -1
         silent CMake
-        let iter = 0
-        while iter < 40 && !filereadable("cmake-build-Release/CMakeCache.txt")
-            sleep 1
-            let iter += 1
-        endwhile
+        call WaitForJob()
         Assert filereadable("cmake-build-Release/CMakeCache.txt"), "CMakeCache.txt should be generated"
         silent call utils#exec#job#stop()
         AssertEqual bufnr('cmake4vim_execute'), -1
@@ -67,24 +27,13 @@ Execute ([Job executor] Generate cmake project with default settings and build e
         Assert !isdirectory("cmake-build-Release"), "Build directory shouldn't exist"
         AssertEqual bufnr('cmake4vim_execute'), -1
         silent CMake
-        let iter = 0
-        while iter < 40 && !filereadable("cmake-build-Release/CMakeCache.txt")
-            sleep 1
-            let iter += 1
-        endwhile
+        call WaitForJob()
         Assert filereadable("cmake-build-Release/CMakeCache.txt"), "CMakeCache.txt should be generated"
         silent CMakeBuild incorrect_lib
         silent on
-        let iter = 0
+        call WaitForJob()
         let window_counter = 0
-        while iter < 40
-            windo let window_counter = window_counter + 1
-            if window_counter > 1
-                break
-            endif
-            sleep 1
-            let iter += 1
-        endwhile
+        windo let window_counter = window_counter + 1
         Assert window_counter > 1
         silent call utils#exec#job#stop()
         AssertEqual bufnr('cmake4vim_execute'), -1
@@ -94,27 +43,31 @@ Execute ([Job executor] Check job cancel command without run):
     AssertEqual bufnr('cmake4vim_execute'), -1
     silent call utils#exec#job#stop()
     AssertEqual bufnr('cmake4vim_execute'), -1
+    call WaitForJob()
 
 Execute ([Job executor] Check job cancel command):
     AssertEqual bufnr('cmake4vim_execute'), -1
-    silent call utils#exec#job#run('sleep 10', '')
+    silent call utils#exec#job#run('sleep 10', 1, '')
     silent call utils#exec#job#stop()
     AssertEqual bufnr('cmake4vim_execute'), -1
+    call WaitForJob()
 
 Execute ([Job executor] Run 2 jobs at once):
-    silent call utils#exec#job#run('sleep 10', '')
-    let ret_code = utils#exec#job#run('sleep 10', '')
+    silent call utils#exec#job#run('sleep 10', 1, '')
+    let ret_code = utils#exec#job#run('sleep 10', 1, '')
     AssertEqual ret_code, -1
     silent call utils#exec#job#stop()
     AssertEqual bufnr('cmake4vim_execute'), -1
+    call WaitForJob()
 
 Execute ([Job executor] Run job and don't mess up the alternate file):
     silent edit first.txt
     silent edit second.txt
     AssertEqual bufname("#"), "first.txt"
-    silent call utils#exec#job#run('sleep 1', '')
+    silent call utils#exec#job#run('sleep 1', 1, '')
     AssertEqual bufname("#"), "first.txt"
     sleep 2
     copen
     cclose
     AssertEqual bufname("#"), "first.txt"
+    call WaitForJob()

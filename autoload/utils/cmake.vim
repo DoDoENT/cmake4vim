@@ -21,7 +21,7 @@ function! s:detectCMakeBuildType() abort
         endif
         for l:type in keys( utils#cmake#getCMakeVariants() )
             let l:build_dir = 'cmake-build-' . l:type
-            let l:build_dir = finddir(l:build_dir, getcwd().';.')
+            let l:build_dir = finddir(l:build_dir, fnameescape(getcwd()))
             if l:build_dir !=# ''
                 break
             endif
@@ -110,7 +110,11 @@ function! utils#cmake#joinUserArgs(cmakeArguments) abort
 
     let l:ret = []
     for [ key, val ] in items(a:cmakeArguments)
-        let l:ret += [ printf('-D%s=%s', key, val ) ]
+        if val !=# ''
+            let l:ret += [ printf('-D%s=%s', key, val ) ]
+        else
+            let l:ret += [ key ]
+        endif
     endfor
     return join(l:ret)
 endfunction
@@ -122,8 +126,12 @@ function! utils#cmake#splitUserArgs(cmakeArguments) abort
 
     let l:ret = {}
     for cmake_arg in split(a:cmakeArguments)
-        let [ key, val ] = split(cmake_arg[ 2: ], '=')
-        let l:ret[ key ] = val
+        if stridx(cmake_arg, '=') != -1
+            let [ key, val ] = split(cmake_arg[ 2: ], '=')
+            let l:ret[ key ] = val
+        else
+            let l:ret[cmake_arg] = ''
+        endif
     endfor
     return l:ret
 endfunction
@@ -206,6 +214,29 @@ function! utils#cmake#getCMakeGenerationCommand(...) abort
     let l:cmake_c_compiler        = g:cmake_c_compiler
     let l:cmake_cxx_compiler      = g:cmake_cxx_compiler
 
+    " Print warnings about deprecated variables
+    if g:cmake_project_generator !=# ''
+        call utils#common#Warning('g:cmake_project_generator option is deprecated and will be removed at the beginning of 2022 year!' .
+                    \ ' Please use `let g:cmake_usr_args="-G<Generator>"` instead.')
+    endif
+    if g:cmake_install_prefix !=# ''
+        call utils#common#Warning('g:cmake_install_prefix option is deprecated and will be removed at the beginning of 2022 year!' .
+                    \ ' Please use `let g:cmake_usr_args="-DCMAKE_INSTALL_PREFIX=<prefix>"` instead.')
+    endif
+    if g:cmake_c_compiler !=# ''
+        call utils#common#Warning('g:cmake_c_compiler option is deprecated and will be removed at the beginning of 2022 year!' .
+                    \ ' Please use `let g:cmake_usr_args="-DCMAKE_C_COMPILER=<compiler>"` instead.')
+    endif
+    if g:cmake_cxx_compiler !=# ''
+        call utils#common#Warning('g:cmake_cxx_compiler option is deprecated and will be removed at the beginning of 2022 year!' .
+                    \ ' Please use `let g:cmake_usr_args="-DCMAKE_CXX_COMPILER=<compiler>"` instead.')
+    endif
+    if g:cmake_toolchain_file !=# ''
+        call utils#common#Warning('g:cmake_toolchain_file option is deprecated and will be removed at the beginning of 2022 year!' .
+                    \ ' Please use `let g:cmake_usr_args="-DCMAKE_TOOLCHAIN_FILE=<file>"` instead.')
+    endif
+
+
     " CMakeKit can contain:
     " * additional user arguments
     " * project generator
@@ -269,7 +300,7 @@ endfunction
 
 " Check that build directory exists
 function! utils#cmake#findBuildDir() abort
-    let l:build_dir = finddir(s:detectCMakeBuildDir(), getcwd().';.')
+    let l:build_dir = finddir(s:detectCMakeBuildDir(), fnameescape(getcwd()))
     if l:build_dir !=# ''
         let l:build_dir = fnamemodify(l:build_dir, ':p:h')
     endif
@@ -280,7 +311,7 @@ endfunction
 
 " Check that src directory exists
 function! utils#cmake#findSrcDir() abort
-    let l:src_dir = finddir(s:detectCMakeSrcDir(), getcwd().';.')
+    let l:src_dir = finddir(s:detectCMakeSrcDir(), fnameescape(getcwd()))
     if l:src_dir !=# ''
         let l:src_dir = fnamemodify(l:src_dir, ':p:h')
     endif
