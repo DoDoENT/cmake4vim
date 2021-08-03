@@ -162,7 +162,7 @@ function! cmake4vim#CompileCurrentSource() abort
     " Select target
     let l:cmd = utils#cmake#getBuildCommand(l:build_dir, expand('%:p') . '^' )
     " Build
-    call utils#common#executeCommand(l:cmd)
+    call utils#common#executeCommand(l:cmd, 1)
 endfunction
 
 " Builds CMake project
