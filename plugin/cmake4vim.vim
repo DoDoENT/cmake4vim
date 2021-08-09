@@ -38,7 +38,6 @@ let g:cmake_build_type            = get(g:, 'cmake_build_type'           , ''   
 let g:cmake_src_dir               = get(g:, 'cmake_src_dir'              , ''            )
 let g:cmake_usr_args              = get(g:, 'cmake_usr_args'             , ''            )
 let g:cmake_ctest_args            = get(g:, 'cmake_ctest_args'           , ''            )
-let g:cmake_run_target_args       = get(g:, 'cmake_run_target_args'      , ''            )
 let g:cmake_variants              = get(g:, 'cmake_variants'             , {}            )
 let g:cmake_selected_kit          = get(g:, 'cmake_selected_kit'         , ''            )
 let g:cmake_kits                  = get(g:, 'cmake_kits'                 , {}            )
