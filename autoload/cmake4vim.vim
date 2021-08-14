@@ -38,7 +38,7 @@ function! cmake4vim#CompleteBuildType(arg_lead, cmd_line, cursor_pos) abort
 endfunction
 
 function! cmake4vim#CompleteKit(arg_lead, cmd_line, cursor_pos) abort
-    return join(sort(keys(g:cmake_kits), 'i'), "\n")
+    return join(sort(keys(utils#cmake#getLoadedCMakeKits()), 'i'), "\n")
 endfunction
 
 " Method remove build directory and reset the cmake cache
@@ -61,6 +61,9 @@ function! cmake4vim#GenerateCMake(...) abort
 
     " Prepare requests to CMake system
     call utils#cmake#common#makeRequests(l:build_dir)
+
+    " reload CMakeKits if needed
+    call utils#cmake#reloadCMakeKits()
 
     " Generates a command for CMake
     let l:cmake_cmd = utils#cmake#getCMakeGenerationCommand(join(a:000))
@@ -200,7 +203,7 @@ endfunction
 
 " Functions allows to switch between cmake kits
 function! cmake4vim#SelectKit(name) abort
-    if !has_key( g:cmake_kits, a:name )
+    if !has_key( utils#cmake#getLoadedCMakeKits(), a:name )
         call utils#common#Warning(printf("CMake kit '%s' not found", a:name))
         return
     endif
@@ -222,11 +225,12 @@ function! cmake4vim#RunTarget(bang, ...) abort
         let l:args = l:old_conf['args']
     endif
 
+    let l:build_command = cmake4vim#SelectTarget(g:cmake_build_target)
     let l:exec_path = utils#cmake#getBinaryPath()
     let l:conf = { g:cmake_build_target : { 'app': l:exec_path, 'args': l:args } }
     call utils#config#vimspector#updateConfig(l:conf)
     if strlen(l:exec_path)
-        call utils#common#executeCommand(join([utils#fs#fnameescape(l:exec_path)] + l:args, ' '), 1)
+        call utils#common#executeCommands([l:build_command, join([utils#fs#fnameescape(l:exec_path)] + l:args, ' ')], 1)
     else
         let v:errmsg = 'Executable "' . g:cmake_build_target . '" was not found'
         call utils#common#Warning(v:errmsg)

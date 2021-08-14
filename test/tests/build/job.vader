@@ -25,16 +25,16 @@ Execute ([Job executor] Generate cmake project with default settings):
 Execute ([Job executor] Generate cmake project with default settings and build error target):
     if !has('win32')    " Skip for Windows
         Assert !isdirectory("cmake-build-Release"), "Build directory shouldn't exist"
-        AssertEqual bufnr('cmake4vim_execute'), -1
+        AssertEqual bufnr('cmake4vim_execute'), -1, "There should be no cmake4vim_execute buffer"
         silent CMake
         call WaitForJob()
         Assert filereadable("cmake-build-Release/CMakeCache.txt"), "CMakeCache.txt should be generated"
-        silent CMakeBuild incorrect_lib
         silent on
+        silent CMakeBuild incorrect_lib
         call WaitForJob()
         Assert HasQF() == 1
         silent call utils#exec#job#stop()
-        AssertEqual bufnr('cmake4vim_execute'), -1
+        AssertEqual bufnr('cmake4vim_execute'), -1, "There should be no cmake4vim_execute buffer"
     endif
 
 Execute ([Job executor] Check job cancel command without run):
@@ -68,4 +68,41 @@ Execute ([Job executor] Run job and don't mess up the alternate file):
     copen
     cclose
     AssertEqual bufname("#"), "first.txt"
+    call WaitForJob()
+
+Execute ([Job executor] Run test_app target with mask arguments with job executor):
+    if utils#cmake#verNewerOrEq([3, 14])
+        silent CMake
+        call WaitForJob()
+        silent CMakeSelectTarget test_app
+        AssertEqual bufnr('cmake4vim_execute'), -1
+        if !has('win32')
+            Assert !filereadable("cmake-build-Release/app/test_app"), "app should not be built"
+        else
+            Assert !filereadable("cmake-build-Release/app/Debug/test_app.exe"), "app should not be built"
+        endif
+        silent CMakeRun --gtest_filter=Test*
+        call WaitForJob()
+        if !has('win32')
+            Assert filereadable("cmake-build-Release/app/test_app"), "app should be built"
+        else
+            Assert filereadable("cmake-build-Release/app/Debug/test_app.exe"), "app should be built"
+        endif
+        AssertEqual bufnr('cmake4vim_execute'), -1
+    else
+        " WA to skip test
+        call utils#common#executeCommand('echo --gtest_filter=Test* F1', 1)
+        call WaitForJob()
+    endif
+    let output = getqflist()
+    Assert 1 == len(output), output
+    AssertEqual '--gtest_filter=Test* F1', output[0]['text']
+
+Execute ([Job executor] Append job to empty pool):
+    let ret = utils#exec#job#append('sleep 2', 1, '')
+    if has('nvim')
+        Assert ret != 0 && ret != -1, ret
+    else
+        Assert job_status(ret) ==# 'run'
+    endif
     call WaitForJob()
