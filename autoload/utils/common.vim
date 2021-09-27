@@ -29,11 +29,12 @@ function! utils#common#executeCommands(cmds, open_result, ...) abort
         silent call utils#exec#dispatch#run(l:cmd, a:open_result, l:errFormat)
     elseif (g:cmake_build_executor ==# 'job') || (g:cmake_build_executor ==# '' && ((has('job') && has('channel')) || has('nvim')))
         " job#run behaves differently if the qflist is open or closed
-        let [l:cmd; l:cmds] = a:cmds
+        let l:cmd = join(a:cmds, ' && ')
+        " let [l:cmd; l:cmds] = a:cmds
         silent call utils#exec#job#run(s:add_noglob(l:cmd), a:open_result, l:errFormat)
-        for l:command in l:cmds
-            silent call utils#exec#job#append(s:add_noglob(l:command), a:open_result, l:errFormat)
-        endfor
+        " for l:command in l:cmds
+        "     silent call utils#exec#job#append(s:add_noglob(l:command), a:open_result, l:errFormat)
+        " endfor
     elseif (g:cmake_build_executor ==# 'term') || (g:cmake_build_executor ==# '' && (has('terminal') || has('nvim')))
         let [l:cmd; l:cmds] = a:cmds
         silent call utils#exec#term#run(s:add_noglob(l:cmd), a:open_result, l:errFormat)

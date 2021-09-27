@@ -77,4 +77,5 @@ nnoremap <silent> <Plug>(CMakeInfo)                 :call utils#window#OpenCMake
 nnoremap <silent> <Plug>(CMakeRun)                  :call cmake4vim#RunTarget(0)<CR>
 nnoremap <silent> <Plug>(CTest)                     :call cmake4vim#CTest(0)<CR>
 nnoremap <silent> <Plug>(CCMake)                    :call cmake4vim#CCMake()<CR>
+nnoremap <silent> <Plug>(CMakeCompileSource)        :call cmake4vim#CompileCurrentSource()<CR>
 " }}} Mappings
