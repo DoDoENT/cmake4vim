@@ -257,6 +257,9 @@ function! utils#cmake#getCMakeGenerationCommand(...) abort
     if g:cmake_selected_kit !=# '' && has_key( s:loaded_cmake_kits, g:cmake_selected_kit )
         silent call utils#cmake#setEnv( g:cmake_selected_kit ) " just in case the user has set the variable manually
         let l:active_kit = s:loaded_cmake_kits[ g:cmake_selected_kit ]
+        if !get( l:active_kit, 'build_type_aware', v:true )
+            let l:cmake_args = l:cmake_args->filter( "v:val !~# '-DCMAKE_BUILD_TYPE'" )
+        endif
         let l:cmake_project_generator = get( l:active_kit, 'generator'     , l:cmake_project_generator )
         let l:cmake_toolchain_file    = get( l:active_kit, 'toolchain_file', l:cmake_toolchain_file    )
         let l:cmake_kit_usr_args      = [ utils#cmake#joinUserArgs( get( l:active_kit, 'cmake_usr_args', {} ) ) ]
