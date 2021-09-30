@@ -71,12 +71,13 @@ function! WaitForJob() abort
         if empty(l:job)
             break
         endif
-        let max_wait -= 1
         if max_wait == 0
             call utils#exec#job#stop()
             throw 'Job did not finish: ' . string(l:job)
         endif
         1sleep
+
+        let max_wait -= 1
     endwhile
 endfunction
 

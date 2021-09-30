@@ -47,6 +47,8 @@ Execute ([Job executor] Check job cancel command):
     AssertEqual bufnr('cmake4vim_execute'), -1
     silent call utils#exec#job#run('sleep 10', 1, '')
     silent call utils#exec#job#stop()
+    " job#stop() triggers job's callback function which sleeps for 100m
+    sleep 200m
     AssertEqual bufnr('cmake4vim_execute'), -1
     call WaitForJob()
 
@@ -55,19 +57,20 @@ Execute ([Job executor] Run 2 jobs at once):
     let ret_code = utils#exec#job#run('sleep 10', 1, '')
     AssertEqual ret_code, -1
     silent call utils#exec#job#stop()
+    sleep 200m
     AssertEqual bufnr('cmake4vim_execute'), -1
     call WaitForJob()
 
 Execute ([Job executor] Run job and don't mess up the alternate file):
-    silent edit first.txt
-    silent edit second.txt
-    AssertEqual bufname("#"), "first.txt"
-    silent call utils#exec#job#run('sleep 1', 1, '')
-    AssertEqual bufname("#"), "first.txt"
+    silent edit firstfile
+    silent edit secondfile
+    AssertEqual bufname("#"), "firstfile"
+    silent call utils#exec#job#run('sleep 2', 1, '')
+    AssertEqual bufname("#"), "firstfile"
     sleep 2
     copen
     cclose
-    AssertEqual bufname("#"), "first.txt"
+    AssertEqual bufname("#"), "firstfile"
     call WaitForJob()
 
 Execute ([Job executor] Run test_app target with mask arguments with job executor):
