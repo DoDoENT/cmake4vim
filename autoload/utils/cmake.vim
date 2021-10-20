@@ -4,7 +4,6 @@
 " Private functions {{{ "
 let s:populated_build_types = []
 let s:cached_usr_args       = {}
-let s:loaded_cmake_kits     = {}
 
 function! s:detectCMakeBuildType() abort
     if g:cmake_build_type !=# ''
