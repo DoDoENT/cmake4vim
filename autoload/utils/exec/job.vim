@@ -63,11 +63,10 @@ function! s:vimClose(channel) abort
     call s:createQuickFix()
 
     if l:open_qf == 0
-        silent cwindow
+        silent botright 20cwindow
     else
-        silent copen
+        silent botright 20copen
     endif
-    cbottom
 endfunction
 
 function! s:nVimOut(job_id, data, event) abort
@@ -95,7 +94,7 @@ function! s:nVimExit(job_id, data, event) abort
     endif
     call s:createQuickFix()
     if a:data != 0 || l:open_qf != 0
-        copen
+        silent botright copen
     endif
 endfunction
 
@@ -106,7 +105,7 @@ function! s:createJobBuf() abort
     " qflist is open somewhere
     if !empty(filter(range(1, winnr('$')), 'getwinvar(v:val, "&ft") ==# "qf"'))
         " move the cursor there
-        copen
+        silent botright 20copen
         silent execute 'keepalt edit ' . s:cmake4vim_buf
     else
         silent execute 'keepalt belowright 10split ' . s:cmake4vim_buf
@@ -140,7 +139,7 @@ function! utils#exec#job#stop() abort
     endif
     let s:cmake4vim_jobs_pool = []
     call s:createQuickFix()
-    copen
+    silent botright 20copen
     call utils#common#Warning('Job is cancelled!')
 endfunction
 
