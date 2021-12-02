@@ -166,6 +166,7 @@ function! utils#exec#job#run(cmd, open_qf, err_fmt) abort
                     \ 'err_io' : 'buffer', 'err_buf' : l:outbufnr,
                     \ 'out_modifiable' : 0,
                     \ 'err_modifiable' : 0,
+                    \ 'pty': 1
                     \ })
     endif
    let s:cmake4vim_job['job'] = l:job
