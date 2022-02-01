@@ -60,11 +60,15 @@ endfunction
 function! s:vimClose(channel) abort
     let l:open_qf = get(s:cmake4vim_job, 'open_qf', 0)
 
-    let l:ret_code = job_info(s:cmake4vim_job['job'])['exitval']
+    if has_key( s:cmake4vim_job, 'job' )
+        let l:ret_code = job_info(s:cmake4vim_job['job'])['exitval']
+    else
+        let l:ret_code = 1
+    endif
     if l:ret_code == 0
         echon 'Success! ' . s:cmake4vim_job['cmd']
     else
-        echon 'Failure! ' . s:cmake4vim_job['cmd']
+        echon 'Failure! ' . get( s:cmake4vim_job, 'cmd', '' )
     endif
 
     " Clean the job pool if exit code is not equal to 0
@@ -119,7 +123,7 @@ function! s:createJobBuf() abort
         silent botright 20copen
         silent execute 'keepalt edit ' . s:cmake4vim_buf
     else
-        silent execute 'keepalt belowright 10split ' . s:cmake4vim_buf
+        silent execute 'keepalt botright 10split ' . s:cmake4vim_buf
     endif
     setlocal bufhidden=hide buftype=nofile buflisted nolist
     setlocal noswapfile nowrap nomodifiable
@@ -140,18 +144,20 @@ function! utils#exec#job#stop() abort
         call s:closeBuffer()
         return
     endif
-    let l:job = s:cmake4vim_job['job']
-    if has('nvim')
-        call jobstop(l:job)
-    else
-        " this triggers vimClose and by that time the job variable may have
-        " been cleared
-        call job_stop(l:job)
+    if has_key( s:cmake4vim_job, 'job' )
+        let l:job = s:cmake4vim_job['job']
+        if has('nvim')
+            call jobstop(l:job)
+        else
+            " this triggers vimClose and by that time the job variable may have
+            " been cleared
+            call job_stop(l:job)
+        endif
+        let s:cmake4vim_jobs_pool = []
+        call s:createQuickFix()
+        silent botright 20copen
+        call utils#common#Warning('Job is cancelled!')
     endif
-    let s:cmake4vim_jobs_pool = []
-    call s:createQuickFix()
-    silent botright 20copen
-    call utils#common#Warning('Job is cancelled!')
 endfunction
 
 function! utils#exec#job#run(cmd, open_qf, err_fmt) abort

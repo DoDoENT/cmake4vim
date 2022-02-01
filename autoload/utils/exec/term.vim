@@ -48,9 +48,9 @@ function! s:vimClose(channel, status) abort
     call s:createQuickFix()
 
     if l:open_qf == 0
-        silent cwindow
+        silent botright 20cwindow
     else
-        silent copen
+        silent botright 20copen
     endif
     cbottom
 
@@ -125,6 +125,7 @@ function! utils#exec#term#run(cmd, open_qf, err_fmt) abort
         let l:termbufnr = bufnr()
     else
         let l:cmd = has('win32') ? a:cmd : [&shell, '-c', a:cmd]
+        silent execute 'keepalt botright 10split'
         let l:job = term_start(l:cmd, {
                     \ 'term_name': l:cmake4vim_term,
                     \ 'exit_cb': function('s:vimClose'),
@@ -134,6 +135,7 @@ function! utils#exec#term#run(cmd, open_qf, err_fmt) abort
                     \ 'out_modifiable' : 0,
                     \ 'err_modifiable' : 0,
                     \ 'norestore': 1,
+                    \ 'curwin': 1,
                     \ })
     endif
     if has('nvim')
