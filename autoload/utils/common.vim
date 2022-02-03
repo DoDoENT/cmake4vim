@@ -36,11 +36,11 @@ function! utils#common#executeCommands(cmds, open_result, ...) abort
         endfor
         silent call utils#exec#job#run(join( l:cmd, ' && ' ), a:open_result, l:errFormat)
     elseif (g:cmake_build_executor ==# 'term') || (g:cmake_build_executor ==# '' && (has('terminal') || has('nvim')))
-        let [l:cmd; l:cmds] = a:cmds
-        silent call utils#exec#term#run(s:add_noglob(l:cmd), a:open_result, l:errFormat)
-        for l:command in l:cmds
-            silent call utils#exec#term#append(s:add_noglob(l:command), a:open_result, l:errFormat)
+        let l:cmd = []
+        for l:command in a:cmds
+            call add( l:cmd, s:add_noglob(l:command) )
         endfor
+        silent call utils#exec#term#run(join( l:cmd, ' && ' ), a:open_result, l:errFormat)
     else
         " Close quickfix list to discard custom error format
         for l:cmd in a:cmds
