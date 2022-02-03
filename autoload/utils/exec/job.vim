@@ -78,9 +78,9 @@ function! s:vimClose(channel) abort
     call s:createQuickFix()
 
     if l:open_qf == 0
-        silent botright 20cwindow
+        silent execute printf( 'botright %dcwindow', g:cmake_build_executor_height )
     else
-        silent botright 20copen
+        silent execute printf( 'botright %dcopen'  , g:cmake_build_executor_height )
     endif
 endfunction
 
@@ -109,7 +109,7 @@ function! s:nVimExit(job_id, data, event) abort
     endif
     call s:createQuickFix()
     if a:data != 0 || l:open_qf != 0
-        silent botright copen
+        silent execute printf( 'botright %dcopen', g:cmake_build_executor_height )
     endif
 endfunction
 
@@ -120,10 +120,10 @@ function! s:createJobBuf() abort
     " qflist is open somewhere
     if !empty(filter(range(1, winnr('$')), 'getwinvar(v:val, "&ft") ==# "qf"'))
         " move the cursor there
-        silent botright 20copen
+        silent execute printf( 'botright %dcopen', g:cmake_build_executor_height )
         silent execute 'keepalt edit ' . s:cmake4vim_buf
     else
-        silent execute 'keepalt botright 10split ' . s:cmake4vim_buf
+        silent execute printf( 'keepalt botright %dsplit %s', g:cmake_build_executor_height, s:cmake4vim_buf )
     endif
     setlocal bufhidden=hide buftype=nofile buflisted nolist
     setlocal noswapfile nowrap nomodifiable
