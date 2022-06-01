@@ -135,23 +135,23 @@ Below the list of options which allow to customize the path to CMake build direc
 
  - **`g:cmake_build_dir`** allows to set cmake build directory.  Default is ''. If variable is empty the plugin will use the prefix plus build type.
  - **`g:cmake_build_path_pattern`** pattern for build dir, two strings that will be evaluated in a `printf`. e.g.:
-     `let g:cmake_build_path_pattern = [ "%s/workspace/build/%s/%s/%s", "$HOME, fnamemodify( getcwd(), ':t' ), g:cmake_selected_kit, g:cmake_build_type" ]`
- - **`g:cmake_build_dir_prefix`** allows to set cmake build directory prefix, in this case the plugin uses the next rule to generate build directory name: `g:cmake_build_dir_prefix` + `g:cmake_build_type`. This option is used by default, the default prefix is 'cmake-build-'.
+     `let g:cmake_build_path_pattern = [ "%s/workspace/build/%s/%s/%s", "$HOME, fnamemodify( getcwd(), ':t' ), g:CMakeSelectedKit, g:CMakeBuildType" ]`
+ - **`g:cmake_build_dir_prefix`** allows to set cmake build directory prefix, in this case the plugin uses the next rule to generate build directory name: `g:cmake_build_dir_prefix` + `g:CMakeBuildType`. This option is used by default, the default prefix is 'cmake-build-'.
 
 #### CMake build options
 
 The list contains variables which allow to configure CMake build.
 
  - **`g:cmake_src_dir`** allows to set cmake source directory.  Default is '' which evaluates to the current working directory.
- - **`g:cmake_build_type`** allows to change **`-DCMAKE_BUILD_TYPE`**. Default is empty. If variable is empty, plugin tries to detect cached build type. And selects 'Release' type if cmake cache doesn't exist.
+ - **`g:CMakeBuildType`** allows to change **`-DCMAKE_BUILD_TYPE`**. Default is empty. If variable is empty, plugin tries to detect cached build type. And selects 'Release' type if cmake cache doesn't exist.
  - **`g:cmake_variants`** enables predefined cmake build variants in the form of a dictionary, e.g. `{ 'Debug' : { 'cmake_build_type' : 'Debug', 'cmake_usr_args' : { 'CONAN_PATH' : '~/.conan' } }`
- - **`g:cmake_build_target`** set the target name for build. Default is empty and default value depends on CMake Generator
+ - **`g:CMakeBuildTarget`** set the target name for build. Default is empty and default value depends on CMake Generator
  - **`g:cmake_usr_args`** allows to set user arguments for cmake. Default is empty. It can be either a string or a dictionary.
  - **`g:make_arguments`** allows to set custom parameters for make command. Default is empty. If variable is empty, plugin launches `make` without arguments.
  - **`g:cmake_ctest_args`** enables arguments for `ctest`, e.g. `'-j8 --output-on-failure --verbose'`. Default is empty. If the user calls `:CTest <some arguments>`, the `g:cmake_ctest_args` are inserted directly after `ctest`, before the `<some arguments>` parameter.
  - **`g:cmake_kits`** enables predefined cmake kits in the form of a dictionary of dictionaries that specify a toolchain file, environment variables, cmake variables among other things
  - **`g:cmake_kits_global_path`** specifies a path to the JSON containing cmake kits. Default is empty.
- - **`g:cmake_selected_kit`** currently selected cmake kit. Default is empty.
+ - **`g:CMakeSelectedKit`** currently selected cmake kit. Default is empty.
 
 
 #### Examples
@@ -247,7 +247,7 @@ function! s:customSelectKit(name) abort
 
     call cmake4vim#SelectKit(a:name)
 
-    let l:cmake_kit = l:loaded_kits[ g:cmake_selected_kit ]
+    let l:cmake_kit = l:loaded_kits[ g:CMakeSelectedKit ]
     let g:ycm_clangd_args = filter( g:ycm_clangd_args, "v:val !~# 'query-driver'" )
     if has_key( l:cmake_kit, 'query_driver' )
         let g:ycm_clangd_args += [ printf( '-query-driver=%s', l:cmake_kit[ 'query_driver' ] ) ]

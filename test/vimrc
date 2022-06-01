@@ -46,13 +46,13 @@ function! ResetPluginOptions()
     let g:cmake_build_dir_prefix='cmake-build-'
 
     let g:make_arguments=''
-    let g:cmake_build_target=''
-    let g:cmake_build_type=''
+    let g:CMakeBuildTarget=''
+    let g:CMakeBuildType=''
     let g:cmake_src_dir=''
     let g:cmake_usr_args=''
     let g:cmake_ctest_args = ''
     let g:cmake_variants = {}
-    let g:cmake_selected_kit = ''
+    let g:CMakeSelectedKit = ''
     let g:cmake_kits = {}
     let g:cmake_kits_global_path = ''
 

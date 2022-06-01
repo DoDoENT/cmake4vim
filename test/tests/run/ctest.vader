@@ -69,21 +69,21 @@ Execute ([CTest] CTest check target):
     if !has('win32') || utils#cmake#verNewerOrEq([3, 14])
         silent CMakeBuild
         if !has('win32')
-            AssertEqual g:cmake_build_target, 'all'
+            AssertEqual g:CMakeBuildTarget, 'all'
             Assert filereadable("cmake-build-Release/app/test_app"), "app should be built"
             Assert filereadable("cmake-build-Release/tests/unit_tests"), "unit_tests should be built"
             Assert filereadable("cmake-build-Release/lib/libtest_lib.a"), "test_lib should be built"
         else
-            AssertEqual g:cmake_build_target, 'ALL_BUILD'
+            AssertEqual g:CMakeBuildTarget, 'ALL_BUILD'
             Assert filereadable("cmake-build-Release/app/Debug/test_app.exe"), "app should be built"
             Assert filereadable("cmake-build-Release/tests/Debug/unit_tests.exe"), "unit_tests should be built"
             Assert filereadable("cmake-build-Release/lib/Debug/test_lib.lib"), "test_lib should be built"
         endif
         silent CTest
         if !has('win32')
-            AssertEqual g:cmake_build_target, 'all'
+            AssertEqual g:CMakeBuildTarget, 'all'
         else
-            AssertEqual g:cmake_build_target, 'ALL_BUILD'
+            AssertEqual g:CMakeBuildTarget, 'ALL_BUILD'
         endif
     endif
 

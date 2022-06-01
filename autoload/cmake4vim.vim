@@ -84,7 +84,7 @@ function! cmake4vim#GenerateCMake(...) abort
 
     " Select the cmake target if plugin changes the build command
     if g:cmake_change_build_command
-        silent call cmake4vim#SelectTarget(g:cmake_build_target)
+        silent call cmake4vim#SelectTarget(g:CMakeBuildTarget)
     endif
 endfunction
 
@@ -112,7 +112,7 @@ function! cmake4vim#CleanCMake() abort
         return
     endif
 
-    let l:current_cmake_target = g:cmake_build_target
+    let l:current_cmake_target = g:CMakeBuildTarget
     call cmake4vim#CMakeBuild(l:clean_target)
     call cmake4vim#SelectTarget(l:current_cmake_target)
 endfunction
@@ -150,7 +150,7 @@ function! cmake4vim#CMakeBuild(...) abort
         call utils#common#Warning('CMake project was not found!')
         return
     endif
-    let l:cmake_target = a:0 ? a:1 : g:cmake_build_target
+    let l:cmake_target = a:0 ? a:1 : g:CMakeBuildTarget
 
     " Select target
     let l:result = cmake4vim#SelectTarget(l:cmake_target)
@@ -234,7 +234,7 @@ endfunction
 
 " Functions allows to switch between build types
 function! cmake4vim#SelectBuildType(buildType) abort
-    let g:cmake_build_type = a:buildType
+    let g:CMakeBuildType = a:buildType
     call cmake4vim#GenerateCMake()
 endfunction
 
@@ -245,31 +245,31 @@ function! cmake4vim#SelectKit(name) abort
         return
     endif
 
-    call utils#cmake#unsetEnv(g:cmake_selected_kit)
+    call utils#cmake#unsetEnv(g:CMakeSelectedKit)
     call utils#cmake#setEnv(a:name)
-    let g:cmake_selected_kit = a:name
+    let g:CMakeSelectedKit = a:name
 endfunction
 
 function! cmake4vim#RunTarget(bang, ...) abort
-    if empty( g:cmake_build_target )
+    if empty( g:CMakeBuildTarget )
         call utils#common#Warning('Please select target first!')
         return
     endif
 
     let l:args = a:000
     if empty(l:args) && !a:bang
-        let l:old_conf = utils#config#vimspector#getTargetConfig(g:cmake_build_target)
+        let l:old_conf = utils#config#vimspector#getTargetConfig(g:CMakeBuildTarget)
         let l:args = l:old_conf['args']
     endif
 
-    let l:build_command = cmake4vim#SelectTarget(g:cmake_build_target)
+    let l:build_command = cmake4vim#SelectTarget(g:CMakeBuildTarget)
     let l:exec_path = utils#cmake#getBinaryPath()
-    let l:conf = { g:cmake_build_target : { 'app': l:exec_path, 'args': l:args } }
+    let l:conf = { g:CMakeBuildTarget : { 'app': l:exec_path, 'args': l:args } }
     if strlen(l:exec_path)
         call utils#common#executeCommands([l:build_command, join([utils#fs#fnameescape(l:exec_path)] + l:args, ' ')], 1)
         call utils#config#vimspector#updateConfig(l:conf)
     else
-        let v:errmsg = 'Executable "' . g:cmake_build_target . '" was not found'
+        let v:errmsg = 'Executable "' . g:CMakeBuildTarget . '" was not found'
         call utils#common#Warning(v:errmsg)
     endif
 endfunction

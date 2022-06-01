@@ -45,13 +45,13 @@ let g:cmake_build_dir_prefix      = get(g:, 'cmake_build_dir_prefix'     , 'cmak
 
 " CMake build
 let g:make_arguments              = get(g:, 'make_arguments'             , ''            )
-let g:cmake_build_target          = get(g:, 'cmake_build_target'         , ''            )
-let g:cmake_build_type            = get(g:, 'cmake_build_type'           , ''            )
+let g:CMakeBuildTarget          = get(g:, 'cmake_build_target'         , ''            )
+let g:CMakeBuildType            = get(g:, 'cmake_build_type'           , ''            )
 let g:cmake_src_dir               = get(g:, 'cmake_src_dir'              , ''            )
 let g:cmake_usr_args              = get(g:, 'cmake_usr_args'             , ''            )
 let g:cmake_ctest_args            = get(g:, 'cmake_ctest_args'           , ''            )
 let g:cmake_variants              = get(g:, 'cmake_variants'             , {}            )
-let g:cmake_selected_kit          = get(g:, 'cmake_selected_kit'         , ''            )
+let g:CMakeSelectedKit          = get(g:, 'cmake_selected_kit'         , ''            )
 let g:cmake_kits                  = get(g:, 'cmake_kits'                 , {}            )
 let g:cmake_kits_global_path      = get(g:, 'cmake_kits_global_path'     , ''            )
 

@@ -6,8 +6,8 @@ let s:populated_build_types = []
 let s:cached_usr_args       = {}
 
 function! s:detectCMakeBuildType() abort
-    if g:cmake_build_type !=# ''
-        return g:cmake_build_type
+    if g:CMakeBuildType !=# ''
+        return g:CMakeBuildType
     endif
     let l:cmake_info = utils#cmake#common#getInfo()
     if !empty(l:cmake_info)
@@ -182,7 +182,7 @@ function! utils#cmake#setBuildTarget(build_dir, target) abort
     if a:target ==# ''
         let l:cmake_target = utils#gen#common#getDefaultTarget()
     endif
-    let g:cmake_build_target = l:cmake_target
+    let g:CMakeBuildTarget = l:cmake_target
 
     return l:cmake_target
 endfunction
@@ -218,9 +218,9 @@ function! utils#cmake#getCMakeGenerationCommand(...) abort
     " * project generator
     " * toolchain file
     " * compilers
-    if g:cmake_selected_kit !=# '' && has_key( utils#cmake#kits#getCMakeKits(), g:cmake_selected_kit )
-        silent call utils#cmake#setEnv( g:cmake_selected_kit ) " just in case the user has set the variable manually
-        let l:active_kit = utils#cmake#kits#getCMakeKits()[ g:cmake_selected_kit ]
+    if g:CMakeSelectedKit !=# '' && has_key( utils#cmake#kits#getCMakeKits(), g:CMakeSelectedKit )
+        silent call utils#cmake#setEnv( g:CMakeSelectedKit ) " just in case the user has set the variable manually
+        let l:active_kit = utils#cmake#kits#getCMakeKits()[ g:CMakeSelectedKit ]
         if !get( l:active_kit, 'build_type_aware', v:true )
             let l:cmake_args = l:cmake_args->filter( "v:val !~# '-DCMAKE_BUILD_TYPE'" )
         endif
@@ -306,14 +306,14 @@ endfunction
 function! utils#cmake#getBinaryPath() abort
     let l:cmake_info = utils#cmake#common#getInfo()
     let l:build_type = s:detectCMakeBuildType()
-    if has_key(l:cmake_info, 'targets') && has_key(l:cmake_info['targets'], l:build_type) && has_key(l:cmake_info['targets'][l:build_type], g:cmake_build_target)
+    if has_key(l:cmake_info, 'targets') && has_key(l:cmake_info['targets'], l:build_type) && has_key(l:cmake_info['targets'][l:build_type], g:CMakeBuildTarget)
         if !has('win32')
-            let l:target = l:cmake_info['targets'][l:build_type][g:cmake_build_target]
+            let l:target = l:cmake_info['targets'][l:build_type][g:CMakeBuildTarget]
         else
-            let l:target = l:cmake_info['targets']['Debug'][g:cmake_build_target]
+            let l:target = l:cmake_info['targets']['Debug'][g:CMakeBuildTarget]
         endif
         if l:target['type'] !=# 'EXECUTABLE'
-            let v:errmsg = 'Target ' . g:cmake_build_target . ' is not an executable'
+            let v:errmsg = 'Target ' . g:CMakeBuildTarget . ' is not an executable'
             call utils#common#Warning(v:errmsg)
             return ''
         endif
@@ -341,9 +341,9 @@ function! utils#cmake#getBinaryPath() abort
     endif
     let l:exec_filename = ''
     if has('win32')
-        let l:exec_filename = g:cmake_build_target . '.exe'
+        let l:exec_filename = g:CMakeBuildTarget . '.exe'
     else
-        let l:exec_filename = g:cmake_build_target
+        let l:exec_filename = g:CMakeBuildTarget
     endif
 
     let l:exec_path = findfile(exec_filename, utils#fs#fnameescape(utils#cmake#getBuildDir()) . '/**')

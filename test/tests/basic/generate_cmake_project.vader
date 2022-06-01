@@ -34,7 +34,7 @@ Execute ([CMake generate] Remove cmake build forder):
 
 Execute ([CMake generate] Generate Debug cmake project):
     Assert !isdirectory("cmake-build-Debug"), "Build directory shouldn't exist"
-    let g:cmake_build_type='Debug'
+    let g:CMakeBuildType='Debug'
     silent CMake
     Assert filereadable("cmake-build-Debug/CMakeCache.txt"), "CMakeCache.txt should be exist"
 
@@ -105,13 +105,13 @@ Execute ([CMake generate] Generate cmake project and change BuildType):
 
 Execute ([CMake generate] Generate RelWithDebInfo cmake project):
     Assert !isdirectory("cmake-build-RelWithDebInfo"), "Build directory shouldn't exist"
-    let g:cmake_build_type='RelWithDebInfo'
+    let g:CMakeBuildType='RelWithDebInfo'
     silent CMake
     Assert filereadable("cmake-build-RelWithDebInfo/CMakeCache.txt"), "CMakeCache.txt should be exist"
 
 Execute ([CMake generate] Generate MinSizeRel cmake project):
     Assert !isdirectory("cmake-build-MinSizeRel"), "Build directory shouldn't exist"
-    let g:cmake_build_type='MinSizeRel'
+    let g:CMakeBuildType='MinSizeRel'
     silent CMake
     Assert filereadable("cmake-build-MinSizeRel/CMakeCache.txt"), "CMakeCache.txt should be exist"
 
@@ -129,9 +129,9 @@ Execute ([CMake generate] Emulate uninitialized project with existed build folde
     let g:cmake_compile_commands_link=""
     let g:cmake_compile_commands=0
     let g:cmake_usr_args=""
-    let g:cmake_build_type=""
+    let g:CMakeBuildType=""
     let g:make_arguments=""
-    let g:cmake_build_target=""
+    let g:CMakeBuildTarget=""
     let g:cmake_build_dir=""
     let g:cmake_change_build_command=1
     let g:cmake_reload_after_save=0

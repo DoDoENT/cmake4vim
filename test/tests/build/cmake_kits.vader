@@ -101,21 +101,21 @@ Execute ([CMake kits] Check CMakeKit default):
     unlet $MY_OTHER_CUSTOM_VARIABLE
 
 Execute ([CMake kits] Check CMakeKit selected kit without CMakeSelectKit):
-    let g:cmake_selected_kit = 'Second'
+    let g:CMakeSelectedKit = 'Second'
     let generation_command = utils#cmake#getCMakeGenerationCommand()
     Assert generation_command =~# '-DFlag=ON'
 
 Execute ([CMake kits] Check build path pattern):
-    let g:cmake_build_path_pattern = [ "./custom-build-name/%s/%s", "g:cmake_selected_kit, g:cmake_build_type" ]
+    let g:cmake_build_path_pattern = [ "./custom-build-name/%s/%s", "g:CMakeSelectedKit, g:CMakeBuildType" ]
     Assert !isdirectory('custom-build-name/First/Debug'), 'Build directory should not exist'
     silent CMakeSelectKit First
-    AssertEqual g:cmake_selected_kit, 'First'
+    AssertEqual g:CMakeSelectedKit, 'First'
     " this calls CMake in the background
     silent CMakeSelectBuildType Debug
     Assert isdirectory('custom-build-name/First/Debug'), 'Build directory should exist'
 
 Execute ([CMake kits] Check build path pattern precedence over build_dir_prefix):
-    let g:cmake_build_path_pattern = [ "./custom-build-name/%s/%s", "g:cmake_selected_kit, g:cmake_build_type" ]
+    let g:cmake_build_path_pattern = [ "./custom-build-name/%s/%s", "g:CMakeSelectedKit, g:CMakeBuildType" ]
     let g:cmake_build_dir_prefix = 'my-custom-prefix'
     Assert !isdirectory('custom-build-name/First/Debug'), 'Build directory should not exist'
     Assert !isdirectory('my-custom-prefixDebug'), 'Build directory should not exist'
@@ -127,9 +127,9 @@ Execute ([CMake kits] Check build path pattern precedence over build_dir_prefix)
 
 Execute ([CMake kits] Check build path pattern when doing a clean build):
     let g:cmake_build_dir    = ''
-    let g:cmake_build_type   = ''
-    let g:cmake_selected_kit = 'First'
-    let g:cmake_build_path_pattern = [ "./custom-build-name/%s", "g:cmake_selected_kit" ]
+    let g:CMakeBuildType   = ''
+    let g:CMakeSelectedKit = 'First'
+    let g:cmake_build_path_pattern = [ "./custom-build-name/%s", "g:CMakeSelectedKit" ]
 
     if has('win32')
         Assert utils#cmake#getBuildDir() =~# "custom-build-name", utils#cmake#getBuildDir()
@@ -152,7 +152,7 @@ Execute ([CMake kits] Call splitUserArgs with a dict):
 
 Execute ([CMake kits] Select a non-existing kit):
     call cmake4vim#SelectKit('nonexistant_key')
-    Assert g:cmake_selected_kit ==# ''
+    Assert g:CMakeSelectedKit ==# ''
 
 Execute ([CMake Kits] Find CMakeKit config in current folder):
     Assert !filereadable('.cmake-kits.json'), 'File already exists'

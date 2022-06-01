@@ -23,7 +23,7 @@ Execute ([CMakeRun] Should not find library target):
 Execute ([CMakeRun] Should find binary target):
     Assert filereadable("cmake-build-Release/CMakeCache.txt"), "CMakeCache.txt should be generated"
     CMakeSelectTarget test_app
-    AssertEqual g:cmake_build_target, 'test_app'
+    AssertEqual g:CMakeBuildTarget, 'test_app'
     if !has('win32')
         Assert filereadable("cmake-build-Release/app/test_app"), "app should be built"
     else
@@ -41,7 +41,7 @@ Execute ([CMakeRun] Should find binary target):
     endif
 
 Execute ([CMakeRun] Run for empty target):
-    let g:cmake_build_target=""
+    let g:CMakeBuildTarget=""
     silent CMakeRun
 
 Execute ([CMakeRun] Run test_app target and open quickfix):
