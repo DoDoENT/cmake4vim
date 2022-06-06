@@ -39,6 +39,8 @@ function! utils#gen#common#getDefaultTarget() abort
         return utils#gen#ninja#getDefaultTarget()
     elseif stridx(l:cmake_gen, utils#gen#make#getGeneratorName()) != -1
         return utils#gen#make#getDefaultTarget()
+    elseif stridx(l:cmake_gen, utils#gen#xcode#getGeneratorName()) != -1
+        return utils#gen#xcode#getDefaultTarget()
     endif
 endfunction
 
@@ -52,6 +54,8 @@ function! utils#gen#common#getCleanTarget() abort
         return utils#gen#ninja#getCleanTarget()
     elseif stridx(l:cmake_gen, utils#gen#make#getGeneratorName()) != -1
         return utils#gen#make#getCleanTarget()
+    elseif stridx(l:cmake_gen, utils#gen#xcode#getGeneratorName()) != -1
+        return utils#gen#xcode#getCleanTarget()
     endif
     return ''
 endfunction
@@ -66,6 +70,8 @@ function! utils#gen#common#getTargets(build_dir) abort
         return utils#gen#ninja#getTargets(a:build_dir)
     elseif stridx(l:cmake_gen, utils#gen#make#getGeneratorName()) != -1
         return utils#gen#make#getTargets(a:build_dir)
+    elseif stridx(l:cmake_gen, utils#gen#xcode#getGeneratorName()) != -1
+        return utils#gen#xcode#getTargets(a:build_dir)
     endif
     return []
 endfunction
@@ -80,6 +86,8 @@ function! utils#gen#common#getBuildCommand(build_dir, target, make_arguments) ab
         return utils#gen#ninja#getBuildCommand(a:build_dir, a:target, a:make_arguments)
     elseif stridx(l:cmake_gen, utils#gen#make#getGeneratorName()) != -1
         return utils#gen#make#getBuildCommand(a:build_dir, a:target, a:make_arguments)
+    elseif stridx(l:cmake_gen, utils#gen#xcode#getGeneratorName()) != -1
+        return utils#gen#xcode#getBuildCommand(a:build_dir, a:target, a:make_arguments)
     endif
 endfunction
 
